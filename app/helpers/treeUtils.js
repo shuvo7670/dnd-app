@@ -7,18 +7,18 @@ export function findNode(nodes, id) {
       }
     }
     return null;
-}
-
-export function removeNode(nodes, id) {
+  }
+  
+  export function removeNode(nodes, id) {
     return nodes
       .map(node => ({
         ...node,
         children: removeNode(node.children || [], id)
       }))
       .filter(node => node.id !== id);
-}
+  }
   
-export function insertNode(nodes, parentId, newNode) {
+  export function insertNode(nodes, parentId, newNode) {
     return nodes.map(node => {
       if (node.id === parentId) {
         return {
@@ -32,5 +32,5 @@ export function insertNode(nodes, parentId, newNode) {
         children: insertNode(node.children || [], parentId, newNode)
       };
     });
-}
+  }
   

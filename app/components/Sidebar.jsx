@@ -32,6 +32,13 @@ export default function Sidebar() {
       <h3>Layout</h3>
       <SidebarItem id="section-1col" label="Section (1 Column)" />
       <SidebarItem id="section-2col" label="Section (2 Columns)" />
+
+      <hr style={{ margin: '16px 0' }} />
+
+      <h3>Widgets</h3>
+      <SidebarItem id="heading" label="Heading" />
+      <SidebarItem id="paragraph" label="Paragraph" />
+      <SidebarItem id="button" label="Button" />
     </div>
   );
 }

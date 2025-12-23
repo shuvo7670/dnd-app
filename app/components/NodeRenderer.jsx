@@ -1,7 +1,13 @@
+// NodeRenderer.jsx
 'use client';
+import { useDroppable } from '@dnd-kit/core';
 
 export default function NodeRenderer({ node, selectedId, dispatch }) {
   const isSelected = selectedId === node.id;
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: node.type === 'column' ? node.id : undefined
+  });
 
   const styles = {
     section: {
@@ -10,16 +16,18 @@ export default function NodeRenderer({ node, selectedId, dispatch }) {
       marginBottom: 16
     },
     column: {
-      border: '1px dashed #aaa',
+      border: isOver ? '2px dashed #0070f3' : '1px dashed #aaa',
       padding: 12,
       marginRight: 8,
-      flex: 1
+      flex: 1,
+      minHeight: 60
     }
   };
 
   return (
     <div
-      style={styles[node.type]}
+      style={node.type === 'column' ? styles.column : styles[node.type]}
+      ref={node.type === 'column' ? setNodeRef : null}
       onPointerDown={(e) => {
         e.stopPropagation();
         dispatch({ type: 'SELECT_NODE', payload: node.id });
@@ -27,7 +35,7 @@ export default function NodeRenderer({ node, selectedId, dispatch }) {
     >
       {node.type === 'section' && (
         <div style={{ display: 'flex' }}>
-          {node.children.map(child => (
+          {node.children.map((child) => (
             <NodeRenderer
               key={child.id}
               node={child}
@@ -38,10 +46,22 @@ export default function NodeRenderer({ node, selectedId, dispatch }) {
         </div>
       )}
 
-      {node.type === 'column' && (
-        <div style={{ minHeight: 60 }}>
-          Empty Column
-        </div>
+      {node.type === 'column' &&
+        node.children.map((child) => (
+          <NodeRenderer
+            key={child.id}
+            node={child}
+            selectedId={selectedId}
+            dispatch={dispatch}
+          />
+        ))}
+
+      {node.type === 'column' && node.children.length === 0 && <div style={{ color: '#888' }}>Drop widgets here</div>}
+
+      {['heading', 'paragraph', 'button'].includes(node.type) && (
+        node.type === 'heading' ? <h2>{node.settings.text}</h2> :
+        node.type === 'paragraph' ? <p>{node.settings.text}</p> :
+        <button>{node.settings.label}</button>
       )}
     </div>
   );

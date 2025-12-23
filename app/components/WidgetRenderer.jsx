@@ -1,15 +1,14 @@
-'use client';
-
 export default function WidgetRenderer({ widget }) {
   switch (widget.type) {
     case 'text':
-      return <p>Text Widget</p>;
+      return <p>{widget.settings.text || 'Text Widget'}</p>;
 
     case 'button':
-      return <button>Button Widget</button>;
+      return <button>{widget.settings.label || 'Button'}</button>;
 
+      
     case 'image':
-      return <div>Image Widget</div>;
+      return <button>{widget.settings.label || 'Image'}</button>;
 
     default:
       return null;

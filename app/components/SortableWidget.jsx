@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import WidgetRenderer from './WidgetRenderer';
 
-export default function SortableWidget({ widget }) {
+export default function SortableWidget({ widget, selectedId, dispatch }) {
   const {
     attributes,
     listeners,
@@ -20,13 +20,13 @@ export default function SortableWidget({ widget }) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    border: selectedId ? '2px solid #ddd' : '1px solid #ddd',
+    transition, 
     padding: 12,
     marginBottom: 12,
-    background: '#fff',
-    border: '1px solid #ddd',
+    background: selectedId ? '#f0f0f0' : '#fff',
     cursor: 'grab'
-  };
+  };  
 
   return (
     <div
@@ -34,8 +34,32 @@ export default function SortableWidget({ widget }) {
       style={style}
       {...attributes}
       {...listeners}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        dispatch({
+          type: 'SELECT_WIDGET',
+          payload: widget.id
+        });
+      }}
     >
-      <WidgetRenderer widget={widget} />
+      {/* Drag Handle (ONLY this drags) */}
+       <div
+        {...attributes}
+        {...listeners}
+        style={{
+          cursor: 'grab',
+          padding: '6px 10px',
+          background: '#f3f4f6',
+          borderBottom: '1px solid #ddd'
+        }}
+      >
+        ⠿
+      </div>
+      <div
+        style={{ padding: 12 }}
+      >
+        <WidgetRenderer widget={widget} />
+      </div>
     </div>
   );
 }

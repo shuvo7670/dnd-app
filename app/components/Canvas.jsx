@@ -1,37 +1,48 @@
 'use client';
 
 import { useDroppable } from '@dnd-kit/core';
-import SortableWidget from './SortableWidget';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import NodeRenderer from './NodeRenderer';
 
-export default function Canvas({ widgets }) {
-  const { setNodeRef } = useDroppable({
-    id: 'canvas'
+export default function Canvas({ layout, selectedId, dispatch }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: 'canvas-dropzone'
   });
-  console.log('widgets',widgets);
-  
+
+  if (!layout.length) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          flex: 1,
+          padding: 24,
+          border: isOver ? '2px dashed #0070f3' : '2px dashed #ddd'
+        }}
+      >
+        Drop sections here
+      </div>
+    );
+  }
+
   return (
     <div
       ref={setNodeRef}
       style={{
         flex: 1,
         padding: 24,
-        background: '#fafafa',
-        color: '#333'
+        border: isOver ? '2px dashed #0070f3' : '2px dashed transparent'
       }}
+      onPointerDown={() =>
+        dispatch({ type: 'SELECT_NODE', payload: null })
+      }
     >
-      {widgets.length === 0 && (
-        <div style={{ color: '#999' }}>Drop widgets here</div>
-      )}
-
-      <SortableContext
-        items={widgets.map(w => w.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        {widgets.map(widget => (
-          <SortableWidget key={widget.id} widget={widget} />
-        ))}
-      </SortableContext>
+      {layout.map(section => (
+        <NodeRenderer
+          key={section.id}
+          node={section}
+          selectedId={selectedId}
+          dispatch={dispatch}
+        />
+      ))}
     </div>
   );
 }
